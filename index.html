@@ -59,7 +59,7 @@
         },
 
         {
-          data: { url: "stations_vic.csv", format: { type: "csv" } },
+          data: { url: "https://raw.githubusercontent.com/ykwa0003/3179/refs/heads/main/stations_vic.csv", format: { type: "csv" } },
           transform: [{ filter: "isValid(datum.Stop_long) && isValid(datum.Stop_lat)" }],
           mark: { type: "circle", opacity: 0.85, stroke: "#1a1a1a", strokeWidth: 0.2, tooltip: { content: "data" } },
           encoding: {
