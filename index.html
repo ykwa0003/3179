@@ -101,7 +101,7 @@
 const areaSpec = {
   $schema: "https://vega.github.io/schema/vega-lite/v5.json",
   width: 875, height: 360,
-  data: { url: "monthly_public_transport_patronage_by_mode.csv" },
+  data: { url: "https://github.com/ykwa0003/3179/blob/main/monthly_public_transport_patronage_by_mode.csv" },
   transform: [
     { calculate: "toDate(datum.Year + '-' + datum.Month + '-01')", as: "Date" },
     { fold: [
@@ -165,14 +165,14 @@ function renderMap(modeValue="ALL"){
       // VIC outline
       {
         projection:"vic",
-        data:{ url:"ne6.json", format:{ type:"topojson", feature:"ne_50m_admin_1_states_provinces" } },
+        data:{ url:"https://github.com/ykwa0003/3179/blob/main/ne6.json", format:{ type:"topojson", feature:"ne_50m_admin_1_states_provinces" } },
         mark:{ type:"geoshape", fill:"#eef2f7", stroke:"#9aa3b1", strokeWidth:1.2 }
       },
 
       // 1) METRO BUS (underlay)
       {
         projection:"vic",
-        data:{ url:"public_transport_stops.geojson", format:{ type:"json", property:"features" } },
+        data:{ url:"https://github.com/ykwa0003/3179/blob/main/public_transport_stops.geojson", format:{ type:"json", property:"features" } },
         transform:[
           { calculate:"datum.geometry.coordinates[0]", as:"lon" },
           { calculate:"datum.geometry.coordinates[1]", as:"lat" },
@@ -204,7 +204,7 @@ encoding: {
       // 2) OTHER MODES (overlay)
       {
         projection:"vic",
-        data:{ url:"public_transport_stops.geojson", format:{ type:"json", property:"features" } },
+        data:{ url:"https://github.com/ykwa0003/3179/blob/main/public_transport_stops.geojson", format:{ type:"json", property:"features" } },
         transform:[
           { calculate:"datum.geometry.coordinates[0]", as:"lon" },
           { calculate:"datum.geometry.coordinates[1]", as:"lat" },
@@ -244,7 +244,7 @@ document.getElementById("modeFilter").addEventListener("change",
     vegaEmbed("#barMetro", {
       $schema: "https://vega.github.io/schema/vega-lite/v5.json",
       width: 150, height: 360,
-      data: { url: "annual_metropolitan_train_station_entries_fy_2024_2025.csv" },
+      data: { url: "https://github.com/ykwa0003/3179/blob/main/annual_metropolitan_train_station_entries_fy_2024_2025.csv" },
       transform: [
         { calculate: "toNumber(datum.Pax_annual)", as: "Entries" },
         { filter: "isValid(datum.Stop_name) && isFinite(datum.Entries)" },
@@ -266,7 +266,7 @@ document.getElementById("modeFilter").addEventListener("change",
     vegaEmbed("#barRegional", {
       $schema: "https://vega.github.io/schema/vega-lite/v5.json",
       width: 150, height: 360,
-      data: { url: "annual_tramstop_patronage.csv" },
+      data: { url: "https://github.com/ykwa0003/3179/blob/main/annual_tramstop_patronage.csv" },
       transform: [
         { calculate: "toNumber(datum.Patronage)", as: "Pat" },   // change to your numeric field if different
         { filter: "isValid(datum.Stop_name) && isFinite(datum.Pat)" },
@@ -283,12 +283,12 @@ document.getElementById("modeFilter").addEventListener("change",
       config: { background:"#12141a", axis:{labelColor:"#e6e8eb",titleColor:"#e6e8eb",gridColor:"#2b2f3b"} }
     }, { actions:false });
     
-    // =============== BUS STOPS (bus_stops_patronage_utf8.csv)
+    // =============== BUS STOPS (bus_stops_patronage.csv)
    // =============== BUS STOPS (deduplicated)
 vegaEmbed("#barBus", {
   $schema: "https://vega.github.io/schema/vega-lite/v5.json",
   width: 150, height: 360,
-  data: { url: "bus_stops_patronage.csv" },
+  data: { url: "https://github.com/ykwa0003/3179/blob/main/bus_stops_patronage.csv" },
   transform: [
     // clean commas if any
     { calculate: "isString(datum.AVERAGE_DAILY) ? replace(datum.AVERAGE_DAILY, ',', '') : datum.AVERAGE_DAILY", as: "cleanVal" },
