@@ -40,9 +40,10 @@
       <span class="pill">Trains • Trams • Buses • Regional coach</span>
       <span class="pill">Source: Data Vic & Tableau</span>
     </p>
-    <p>This visualisation explores <strong>how different modes are used</strong>,
+    <p>Public transport is a <strong>big part</strong> of many peoples' lives. 
+      This visualisation explores Victoria's public transport through <strong>how different modes are used</strong>,
       where stations and stops are, <strong>which hubs are busiest</strong>,
-      and how demand relates to <strong>distance from Melbourne CBD</strong>.</p>
+      as well as the delays and disruptions faced by Victorians (to be added).</p>
   </section>
 
   <!-- ====== STACKED AREA ====== -->
@@ -50,13 +51,16 @@
     <h2>Patronage over time by mode</h2>
     <p>Usage across Victoria. Click legend items to focus on one mode.</p>
     <div id="areaChart" class="chart"></div>
+    <p>Metro trains, metro trams, and metro buses are the public transport modes most used.</p>
+    <p>Note: Data is not accurate as there is missing data due to reasons such as fare evasion.</p>
+    <p>Note: Patronage was extremely low in 2020 due to the outbreak of COVID-19.</p>
   </section>
 
   <!-- ====== MAP ====== -->
   <section class="panel" id="map">
     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap">
       <div><h2>Where the stops and stations are</h2>
-        <p>Points coloured by mode and positioned geographically across Victoria.</p>
+        <p>Points coloured by mode and positioned geographically across Victoria. Use the filter to see the stations/stops of each mode.</p>
       </div>
       <div>
         <label class="caps" for="modeFilter">Filter mode</label>
@@ -91,6 +95,7 @@
         <div id="barBus" class="chart"></div>
       </div>
     </div>
+    <p>In this section, we explore the busiest stations and stops of the top 3 transport mode.</p>
   </section>
   
 
