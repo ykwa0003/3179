@@ -3,93 +3,320 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Melbourne Metropolitan Train Station Entries, FY2024–25</title>
-
+  <title>Public Transport in Victoria – Scroll Story</title>
   <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
   <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
   <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
-
   <style>
-    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 0; padding: 24px; background: #fafafa; }
-    h1 { font-weight: 600; font-size: 20px; margin: 0 0 8px 0; }
-    p  { margin: 0 0 18px 0; color: #444; }
-    .vis-wrap { max-width: 980px; margin: 0 auto; background: #fff; padding: 16px; border-radius: 12px; box-shadow: 0 2px 20px rgba(0,0,0,.06); }
-    #vis { width: 100%; }
-    .note { font-size: 13px; color: #666; margin-top: 10px; }
+    :root{--bg:#0b0c10;--panel:#12141a;--ink:#e6e8eb;--muted:#a7b0b8;--accent:#73d2de}
+    html,body{margin:0;background:var(--bg);color:var(--ink);
+      font:16px/1.5 system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+    .wrap{max-width:1100px;margin:0 auto;padding:24px}
+    h1,h2{line-height:1.2;margin:0 0 12px}
+    h1{font-size:44px}
+    h2{font-size:26px;margin-top:8px}
+    p{color:var(--muted)}
+    .panel{background:var(--panel);border:1px solid #1d2230;
+      box-shadow:0 10px 30px rgba(0,0,0,.25);border-radius:18px;
+      padding:22px;margin:18px 0}
+    .byline{display:flex;gap:16px;flex-wrap:wrap;color:#9aa3ab;font-size:14px}
+    .chart{margin-top:10px}
+    .caps{letter-spacing:.08em;text-transform:uppercase;
+      color:#93a1ad;font-size:12px}
+    .pill{display:inline-block;border:1px solid #2a3448;border-radius:999px;
+      padding:6px 10px;margin-right:6px;color:#a8b3bd;font-size:12px}
+    select{background:#1b2230;color:var(--ink);border:1px solid #2a3448;
+      border-radius:12px;padding:8px 10px}
   </style>
 </head>
-
 <body>
-  <div class="vis-wrap">
-    <h1>Annual Passenger Entries at Melbourne Train Stations, FY2024–25</h1>
-    <p>Circle size shows annual entries, colour shows average weekday entries</p>
-    <div id="vis"></div>
-    <div class="note">Data: data.vic.gov.au &amp; Natural Earth Data</div>
-  </div>
+<div class="wrap">
 
-  <script>
-    const spec = {
-      $schema: "https://vega.github.io/schema/vega-lite/v5.json",
-      width: 940,
-      height: 600,
-      config: { view: { stroke: null }, legend: { orient: "right" }, axis: { grid: false } },
+  <!-- ====== INTRO ====== -->
+  <section class="panel" id="intro">
+    <div class="caps">Victoria • Public Transport</div>
+    <h1>How Victorians Move: Usage, Places, and Hotspots</h1>
+    <p class="byline">
+      <span class="pill">Trains • Trams • Buses • Regional coach</span>
+      <span class="pill">Source: Data Vic & Tableau</span>
+    </p>
+    <p>This visualisation explores <strong>how different modes are used</strong>,
+      where stations and stops are, <strong>which hubs are busiest</strong>,
+      and how demand relates to <strong>distance from Melbourne CBD</strong>.</p>
+  </section>
 
-      "projection": {
-        "type": "mercator",
-        "center": [145.0, -37.8], 
-        "scale": 35000,
-        "translate": [470, 300]
-        },
-        
-      layer: [
-        {
-          data: {
-            url: "https://raw.githubusercontent.com/ykwa0003/3179/refs/heads/main/ne6.json",
-            format: { type: "topojson", feature: "ne_50m_admin_1_states_provinces" }
+  <!-- ====== STACKED AREA ====== -->
+  <section class="panel" id="area">
+    <h2>Patronage over time by mode</h2>
+    <p>Usage across Victoria. Click legend items to focus on one mode.</p>
+    <div id="areaChart" class="chart"></div>
+  </section>
+
+  <!-- ====== MAP ====== -->
+  <section class="panel" id="map">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap">
+      <div><h2>Where the stops and stations are</h2>
+        <p>Points coloured by mode and positioned geographically across Victoria.</p>
+      </div>
+      <div>
+        <label class="caps" for="modeFilter">Filter mode</label>
+        <select id="modeFilter">
+          <option value="ALL" selected>All modes</option>
+          <option>METRO TRAIN</option>
+          <option>REGIONAL TRAIN</option>
+          <option>METRO TRAM</option>
+          <option>METRO BUS</option>
+          <option>REGIONAL BUS</option>
+          <option>REGIONAL COACH</option>
+        </select>
+      </div>
+    </div>
+    <div id="mapChart" class="chart"></div>
+  </section>
+
+  <section class="panel" id="busiest">
+    <h2>Top stations / stops by patronage</h2>
+    <p>Top locations by annual/average patronage.</p>
+    <div style="display:grid;gap:18px;grid-template-columns:repeat(3,1fr)">
+      <div>
+        <div class="caps">Metro train</div>
+        <div id="barMetro" class="chart"></div>
+      </div>
+      <div>
+        <div class="caps">Metro tram</div>
+        <div id="barRegional" class="chart"></div>
+      </div>
+      <div>
+        <div class="caps">Bus stops</div>
+        <div id="barBus" class="chart"></div>
+      </div>
+    </div>
+  </section>
+  
+
+</div>
+
+<script>
+// ====== AREA CHART ======
+const areaSpec = {
+  $schema: "https://vega.github.io/schema/vega-lite/v5.json",
+  width: 875, height: 360,
+  data: { url: "monthly_public_transport_patronage_by_mode.csv" },
+  transform: [
+    { calculate: "toDate(datum.Year + '-' + datum.Month + '-01')", as: "Date" },
+    { fold: [
+        "Metropolitan train","Metropolitan tram","Metropolitan bus",
+        "Regional train","Regional coach","Regional bus"
+      ],
+      as: ["Mode","Patronage"]
+    },
+    { calculate: "toNumber(datum.Patronage)", as: "PatronageNum" }
+  ],
+  params: [
+    { name: "hl", select: { type: "point", fields: ["Mode"] }, bind: "legend" }
+  ],
+  mark: { type: "area", interpolate: "monotone" },
+  encoding: {
+    x: { field: "Date", type: "temporal", title: "Month" },
+    y: {
+      aggregate: "sum", field: "PatronageNum",
+      type: "quantitative", title: "Total riders"
+    },
+    color: { field: "Mode", type: "nominal", title: "Mode", scale: { scheme: "category10" } },
+    opacity: { condition: { param: "hl", value: 1 }, value: 0.18 },
+    strokeWidth: { condition: { param: "hl", value: 1.2 }, value: 0 },
+    order: { field: "Mode" },
+    // Tooltip added here
+    tooltip: [
+      { field: "Date", type: "temporal", title: "Month" },
+      { field: "Mode", title: "Mode" },
+      { aggregate: "sum", field: "PatronageNum", title: "Riders", format: "," }
+    ]
+  },
+  config: {
+    area: { opacity: 0.85 },
+    legend: { labelColor: "#e6e8eb", titleColor: "#e6e8eb" },
+    axis: { labelColor: "#e6e8eb", titleColor: "#e6e8eb", gridColor: "#2b2f3b" },
+    background: "#12141a"
+  }
+};
+vegaEmbed("#areaChart", areaSpec, { actions:false });
+
+// ====== MAP SECTION ======
+function renderMap(modeValue="ALL"){
+  // decide which points each layer should show
+  let busFilterExpr, othersFilterExpr;
+  if (modeValue === "ALL") {
+    busFilterExpr    = "datum.mode === 'METRO BUS'";
+    othersFilterExpr = "datum.mode != 'METRO BUS'";
+  } else if (modeValue === "METRO BUS") {
+    busFilterExpr    = "datum.mode === 'METRO BUS'";
+    othersFilterExpr = "false"; // hide others
+  } else {
+    busFilterExpr    = "false"; // hide bus layer
+    othersFilterExpr = `datum.mode === '${modeValue}'`;
+  }
+
+  const mapSpec = {
+    $schema: "https://vega.github.io/schema/vega-lite/v5.json",
+    width: 900, height: 600,
+    projection: { name:"vic", type:"mercator", center:[145,-37.8], scale:12000 },
+    layer: [
+      // VIC outline
+      {
+        projection:"vic",
+        data:{ url:"ne6.json", format:{ type:"topojson", feature:"ne_50m_admin_1_states_provinces" } },
+        mark:{ type:"geoshape", fill:"#eef2f7", stroke:"#9aa3b1", strokeWidth:1.2 }
+      },
+
+      // 1) METRO BUS (underlay)
+      {
+        projection:"vic",
+        data:{ url:"public_transport_stops.geojson", format:{ type:"json", property:"features" } },
+        transform:[
+          { calculate:"datum.geometry.coordinates[0]", as:"lon" },
+          { calculate:"datum.geometry.coordinates[1]", as:"lat" },
+          { calculate:"datum.properties.MODE", as:"mode" },
+          { calculate:"datum.properties.STOP_NAME", as:"name" },
+          { filter:"datum.mode != 'INTERSTATE TRAIN' && datum.mode != 'SKYBUS'" },
+          { filter:"datum.lon >= 140.7 && datum.lon <= 150.6 && datum.lat >= -39.9 && datum.lat <= -33.0" },
+          { filter: busFilterExpr }
+        ],
+        // --- BUS UNDERLAY (make sure legend is ON here) ---
+mark: { type: "circle", opacity: 0.55, zindex: 0 },
+encoding: {
+  longitude: { field: "lon" },
+  latitude:  { field: "lat" },
+  size: { value: 14 },
+  color: {
+    field: "mode",
+    type: "nominal",
+    title: "Mode",
+    scale: { scheme: "tableau10" },
+    legend: { labelColor: "#e6e8eb", titleColor: "#e6e8eb" }  // <— keep legend visible
+  },
+  tooltip: [
+    { field: "name", title: "Stop/Station" },
+    { field: "mode", title: "Mode" }
+  ]
+}},
+
+      // 2) OTHER MODES (overlay)
+      {
+        projection:"vic",
+        data:{ url:"public_transport_stops.geojson", format:{ type:"json", property:"features" } },
+        transform:[
+          { calculate:"datum.geometry.coordinates[0]", as:"lon" },
+          { calculate:"datum.geometry.coordinates[1]", as:"lat" },
+          { calculate:"datum.properties.MODE", as:"mode" },
+          { calculate:"datum.properties.STOP_NAME", as:"name" },
+          { filter:"datum.mode != 'INTERSTATE TRAIN' && datum.mode != 'SKYBUS'" },
+          { filter:"datum.lon >= 140.7 && datum.lon <= 150.6 && datum.lat >= -39.9 && datum.lat <= -33.0" },
+          { filter: othersFilterExpr }
+        ],
+        mark:{ type:"circle", opacity:0.9, zindex:1 },
+        encoding:{
+          longitude:{ field:"lon" }, latitude:{ field:"lat" },
+          size:{ value:18 },                    // slightly larger
+          color:{
+            field:"mode", type:"nominal", title:"Mode",
+            scale:{ scheme:"tableau10" },
+            legend:{ labelColor:"#e6e8eb", titleColor:"#e6e8eb" }
           },
-          mark: { type: "geoshape", fill: "#ececec", stroke: "#bdbdbd", strokeWidth: 0.6 }
-        },
-
-        {
-        data: {
-            url: "https://raw.githubusercontent.com/ykwa0003/3179/refs/heads/main/ne6.json",
-            format: { type: "topojson", feature: "ne_10m_graticules_1" }
-        },
-        mark: { type: "geoshape", stroke: "#999999", strokeWidth: 0.5 }
-        },
-
-        {
-          data: { url: "https://raw.githubusercontent.com/ykwa0003/3179/refs/heads/main/stations_vic.csv", format: { type: "csv" } },
-          transform: [{ filter: "isValid(datum.Stop_long) && isValid(datum.Stop_lat)" }],
-          mark: { type: "circle", opacity: 0.85, stroke: "#1a1a1a", strokeWidth: 0.2, tooltip: { content: "data" } },
-          encoding: {
-            longitude: { field: "Stop_long", type: "quantitative" },
-            latitude: { field: "Stop_lat", type: "quantitative" },
-            size: {
-              field: "Pax_annual",
-              type: "quantitative",
-              title: "Annual entries",
-              scale: { range: [20, 1200] }
-            },
-            color: {
-              field: "Pax_weekday",
-              type: "quantitative",
-              title: "Weekday average",
-              scale: { scheme: "blues" }
-            },
-            tooltip: [
-              { field: "Stop_name", title: "Station" },
-              { field: "Pax_annual", title: "Annual entries" },
-              { field: "Pax_weekday", title: "Weekday average" },
-              { field: "Pax_Saturday", title: "Saturday average" },
-              { field: "Pax_Sunday", title: "Sunday average" }
-            ]
-          }
+          tooltip:[ {field:"name", title:"Stop/Station"}, {field:"mode", title:"Mode"} ]
         }
-      ]
-    };
+      }
+    ],
+    config:{ background:"#12141a" }
+  };
 
-    vegaEmbed("#vis", spec, { actions: false });
-  </script>
+  vegaEmbed("#mapChart", mapSpec, { actions:false });
+}
+
+// initial + dropdown
+renderMap();
+document.getElementById("modeFilter").addEventListener("change",
+  e => renderMap(e.target.value));
+</script>
+
+<script>
+    // =============== METRO TRAIN (annual_metropolitan_train_station_entries_fy_2024_2025.csv)
+    vegaEmbed("#barMetro", {
+      $schema: "https://vega.github.io/schema/vega-lite/v5.json",
+      width: 150, height: 360,
+      data: { url: "annual_metropolitan_train_station_entries_fy_2024_2025.csv" },
+      transform: [
+        { calculate: "toNumber(datum.Pax_annual)", as: "Entries" },
+        { filter: "isValid(datum.Stop_name) && isFinite(datum.Entries)" },
+        { window: [{ op: "rank", as: "rk" }], sort: [{ field: "Entries", order: "descending" }] },
+        { filter: "datum.rk <= 10" }
+      ],
+      mark: "bar",
+      encoding: {
+        y: { field: "Stop_name", type: "nominal", sort: "-x", title: null, axis: { labelLimit: 220 } },
+        x: { field: "Entries", type: "quantitative", title: "Annual entries", axis: { format: "," } },
+        color: { value: "#73d2de" },
+        tooltip: [{ field: "Stop_name", title: "Station" }, { field: "Entries", title: "Entries", format: "," }]
+      },
+      config: { background:"#12141a", axis:{labelColor:"#e6e8eb",titleColor:"#e6e8eb",gridColor:"#2b2f3b"} }
+    }, { actions:false });
+    
+    // =============== TRAM STOPS (annual_tramstop_patronage.csv)
+    // (Using your #barRegional slot as you requested)
+    vegaEmbed("#barRegional", {
+      $schema: "https://vega.github.io/schema/vega-lite/v5.json",
+      width: 150, height: 360,
+      data: { url: "annual_tramstop_patronage.csv" },
+      transform: [
+        { calculate: "toNumber(datum.Patronage)", as: "Pat" },   // change to your numeric field if different
+        { filter: "isValid(datum.Stop_name) && isFinite(datum.Pat)" },
+        { window: [{ op: "rank", as: "rk" }], sort: [{ field: "Pat", order: "descending" }] },
+        { filter: "datum.rk <= 10" }
+      ],
+      mark: "bar",
+      encoding: {
+        y: { field: "Stop_name", type: "nominal", sort: "-x", title: null, axis: { labelLimit: 220 } },
+        x: { field: "Pat", type: "quantitative", title: "Annual patronage", axis: { format: "," } },
+        color: { value: "#8bd4a1" },
+        tooltip: [{ field: "Stop_name", title: "Tram stop" }, { field: "Pat", title: "Patronage", format: "," }]
+      },
+      config: { background:"#12141a", axis:{labelColor:"#e6e8eb",titleColor:"#e6e8eb",gridColor:"#2b2f3b"} }
+    }, { actions:false });
+    
+    // =============== BUS STOPS (bus_stops_patronage_utf8.csv)
+   // =============== BUS STOPS (deduplicated)
+vegaEmbed("#barBus", {
+  $schema: "https://vega.github.io/schema/vega-lite/v5.json",
+  width: 150, height: 360,
+  data: { url: "bus_stops_patronage.csv" },
+  transform: [
+    // clean commas if any
+    { calculate: "isString(datum.AVERAGE_DAILY) ? replace(datum.AVERAGE_DAILY, ',', '') : datum.AVERAGE_DAILY", as: "cleanVal" },
+    { calculate: "toNumber(datum.cleanVal)", as: "AvgDailyNum" },
+
+    // group duplicates by STOP_NAME and average their patronage
+    { aggregate: [{ op: "mean", field: "AvgDailyNum", as: "MeanPatronage" }],
+      groupby: ["STOP_NAME"] },
+
+    // rank the grouped results
+    { window: [{ op: "rank", as: "rk" }], sort: [{ field: "MeanPatronage", order: "descending" }] },
+    { filter: "datum.rk <= 10" }
+  ],
+  mark: "bar",
+  encoding: {
+    y: { field: "STOP_NAME", type: "nominal", sort: "-x", title: null, axis: { labelLimit: 220 } },
+    x: { field: "MeanPatronage", type: "quantitative", title: "Avg daily boardings", axis: { format: "," } },
+    color: { value: "#e6a96b" },
+    tooltip: [
+      { field: "STOP_NAME", title: "Stop" },
+      { field: "MeanPatronage", title: "Avg daily", format: "," }
+    ]
+  },
+  config: { background:"#12141a", axis:{ labelColor:"#e6e8eb", titleColor:"#e6e8eb", gridColor:"#2b2f3b" } }
+}, { actions:false });
+
+    </script>
+    
+
 </body>
 </html>
