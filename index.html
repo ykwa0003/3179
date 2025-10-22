@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Public Transport in Victoria – Scroll Story</title>
+  <title>Public Transport in Victoria</title>
   <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
   <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
   <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
@@ -15,6 +15,7 @@
     h1,h2{line-height:1.2;margin:0 0 12px}
     h1{font-size:44px}
     h2{font-size:26px;margin-top:8px}
+    h3{font-size:20px;margin-top:2px}
     p{color:var(--muted)}
     .panel{background:var(--panel);border:1px solid #1d2230;
       box-shadow:0 10px 30px rgba(0,0,0,.25);border-radius:18px;
@@ -27,6 +28,55 @@
       padding:6px 10px;margin-right:6px;color:#a8b3bd;font-size:12px}
     select{background:#1b2230;color:var(--ink);border:1px solid #2a3448;
       border-radius:12px;padding:8px 10px}
+
+      #area .grid-2col {
+  display: grid;
+  gap: 18px;
+  align-items: start;
+}
+.grid-2x2 {
+  display: grid;
+  grid-template-areas:
+    "heat textA"
+    "textB line";
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto;
+  gap: 18px;
+  align-items: start;
+}
+.area-left   { grid-area: chart; margin-left: -725px; }
+.area-right  { grid-area: text;  margin-top: 100px; max-width: 320px; }
+.freq-heat   { grid-area: heat; }
+.freq-text-a { grid-area: textA; margin-top:40px;}
+.freq-text-b { grid-area: textB; margin-top: 40px; max-width: 400px; margin-left: 25px;}
+.freq-line   { grid-area: line; margin-left: -200px;}
+
+.chart { margin-top: 10px; }
+
+.map-note {
+  position:absolute;
+  grid-area: text; max-width: 300px; margin-left: 750px; margin-top: -135px;
+}
+
+.annotation {
+  position:absolute;
+  grid-area:text; max-width:250px; margin-left:-375px; font-size: 10px; margin-top: -360px;
+}
+
+#sources .sources {
+  column-count: 2;    
+  column-gap: 40px;      
+}
+
+#sources p {
+  font-size: 14px;
+  line-height: 1.5;
+  word-break: break-all;  
+  margin: 6px 0;
+}
+
+
+
   </style>
 </head>
 <body>
@@ -38,29 +88,44 @@
     <h1>How Victorians Move: Usage, Places, and Hotspots</h1>
     <p class="byline">
       <span class="pill">Trains • Trams • Buses • Regional coach</span>
-      <span class="pill">Source: Data Vic & Tableau</span>
+      <span class="pill">Source: Data Vic & Philip Mallis</span>
     </p>
-    <p>Public transport is a <strong>big part</strong> of many peoples' lives. 
-      This visualisation explores Victoria's public transport through <strong>how different modes are used</strong>,
-      where stations and stops are, <strong>which hubs are busiest</strong>,
-      as well as the delays and disruptions faced by Victorians (to be added).</p>
+    <p>Public transport <strong>connects Victorians to work, school, and everyday life</strong>.
+      This visualisation explores <strong>usage patterns, busy hubs, and service gaps</strong>.
+      Together, these insights highlight <strong>how well Victoria’s network supports its communities today</strong>
+      and <strong>where it could improve</strong>.</p>
   </section>
 
   <!-- ====== STACKED AREA ====== -->
   <section class="panel" id="area">
-    <h2>Patronage over time by mode</h2>
-    <p>Usage across Victoria. Click legend items to focus on one mode.</p>
-    <div id="areaChart" class="chart"></div>
-    <p>Metro trains, metro trams, and metro buses are the public transport modes most used.</p>
-    <p>Note: Data is not accurate as there is missing data due to reasons such as fare evasion.</p>
-    <p>Note: Patronage was extremely low in 2020 due to the outbreak of COVID-19.</p>
+    <div class="grid-2col" style="grid-template-columns: 2fr 1fr;">
+      <div class="area-left">
+        <h2>Patronage over time by mode</h2>
+        <p>Usage across Victoria. Click legend items to focus on one mode.</p>
+        <div id="areaChart" class="chart"></div>
+      </div>
+      <div class="area-right">
+        <div class="caps">What to notice</div>
+        <p>This chart shows how public transport usage in Victoria has changed from 2018 to 2025 across different modes.
+          <strong>Metropolitan trains, trams, and buses make up the bulk of travel</strong>,
+          with <strong>trains consistently recording the highest ridership</strong>.</p>
+          <p><strong>A sharp drop in 2020 reflects the impact of COVID-19 lockdowns</strong>, 
+          followed by a gradual recovery in the following years. 
+          While overall patronage has yet to reach pre-pandemic peaks, 
+          the steady rise since 2022 suggests that Victorians are returning to public transport.</p>
+          <div class="annotation">
+          <p><i>Note: Data may undercount trips due to fare evasion or incomplete tap-on records.</i></p>
+        </div>
+      </div>
+    </div>
   </section>
+  
 
   <!-- ====== MAP ====== -->
   <section class="panel" id="map">
     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap">
       <div><h2>Where the stops and stations are</h2>
-        <p>Points coloured by mode and positioned geographically across Victoria. Use the filter to see the stations/stops of each mode.</p>
+        <p>Points are coloured by mode and positioned geographically across Victoria. Use the filter to see the stations/stops of each mode.</p>
       </div>
       <div>
         <label class="caps" for="modeFilter">Filter mode</label>
@@ -76,11 +141,16 @@
       </div>
     </div>
     <div id="mapChart" class="chart"></div>
+    <div class="map-note">
+      <p><i>Metropolitan Melbourne has the highest density of stops,
+        while regional services are more dispersed.
+        <strong>This pattern highlights strong urban connectivity but limited accessibility in rural areas</strong>.</i></p>
+        </div>
   </section>
 
   <section class="panel" id="busiest">
     <h2>Top stations / stops by patronage</h2>
-    <p>Top locations by annual/average patronage.</p>
+    <p>Identifying the busiest stations/stops can help Public Transport Victoria (PTV) plan services more effectively.</p>
     <div style="display:grid;gap:18px;grid-template-columns:repeat(3,1fr)">
       <div>
         <div class="caps">Metro train</div>
@@ -88,15 +158,80 @@
       </div>
       <div>
         <div class="caps">Metro tram</div>
-        <div id="barRegional" class="chart"></div>
+        <div id="barTram" class="chart"></div>
       </div>
       <div>
-        <div class="caps">Bus stops</div>
+        <div class="caps">Metro bus</div>
         <div id="barBus" class="chart"></div>
       </div>
     </div>
-    <p>In this section, we explore the busiest stations and stops of the top 3 transport mode.</p>
+    <p>Flinders Street, Southern Cross, & Melbourne Central are the busiest train stations,
+      while Federation Square & Monash University (Clayton) lead tram and bus activity.
+      The results show <strong>Melbourne’s transport demand is concentrated around key city hubs and major interchange points</strong>.</p>
   </section>
+
+  <!-- ====== SERVICE FREQUENCY ====== -->
+  <section class="panel" id="frequency">
+    <h2>When and how often services run</h2>
+    <div class="grid-2x2">
+      <!-- top left: heatmap -->
+      <div class="freq-heat">
+        <div id="heatmapChart" class="chart"></div>
+      </div>
+  
+      <!-- top right: text -->
+      <div class="freq-text-a">
+        <div class="caps">Service Intensity</div>
+        <p>Transport services <strong>peak during the morning and evening rush hours</strong>,
+          with reduced activity late at night and early in the morning.</p>
+          <p><strong>Trains and trams continue operating more frequently into the night</strong>,
+          while bus services taper off earlier.</p>
+          <p><i>Note: Frequency (%) is calculated separately for each mode due to the difference in the number of stations.</i></p>
+      </div>
+  
+      <!-- bottom left: text -->
+      <div class="freq-text-b">
+        <div class="caps">Weekdays VS Weekends</div>
+        <p>Weekday services peak sharply during the morning and evening commute hours,
+          <strong>reflecting regular work and school travel patterns</strong>.</p>
+        <p>Weekend trips, however, rise later in the day and stay high until late evening,
+          showing <strong>more consistent activity linked to leisure and social travel</strong>.</p>
+        <p>This suggests that service frequency may need to be <strong>slightly higher on weekends</strong>
+           to better match sustained demand.</p>
+      </div>
+  
+      <!-- bottom right: line chart -->
+      <div class="freq-line">
+        <div id="lineChart" class="chart"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== CONCLUSION ====== -->
+<section class="panel" id="conclusion">
+  <h2>Conclusion</h2>
+  <p>Victoria’s transport network is <strong>busiest in metropolitan areas</strong>,
+    with peak demand during weekday rush hours. Weekends show steadier travel through the day,
+    and trains and trams maintain stronger coverage than buses at night.
+    Overall, the findings point to an efficient urban network with <strong>room to improve accessibility and
+    frequency across regional and off-peak services</strong>.</p>
+    <p>Done by: Kwa Yanni, Monash University</p>
+
+</section>
+
+<!-- ====== SOURCES ====== -->
+ <section class="panel" id="sources">
+  <h3>Sources</h3>
+  <div class="sources">
+  <p>https://discover.data.vic.gov.au/dataset/monthly-public-transport-patronage-by-mode (Stacked Area Chart)</p>
+  <p>https://discover.data.vic.gov.au/dataset/public-transport-lines-and-stops (Map)</p>
+  <p>https://discover.data.vic.gov.au/dataset/annual-metropolitan-train-station-patronage-station-entries (Bar Chart)</p>
+  <p>https://philipmallis.com/2022/03/09/railway-station-and-tram-stop-patronage-in-victoria-for-2008-2021/ (Bar Chart)</p>
+  <p>https://public.tableau.com/app/profile/philipmallis/viz/2018-19BusStopPatronageMelbourne/Map (Bar Chart)</p>
+  <p>https://discover.data.vic.gov.au/dataset/gtfs-schedule (Heat Map)</p>
+  <p>https://discover.data.vic.gov.au/dataset/monthly-average-patronage-by-day-type-and-by-mode (Line Chart)</p>
+</div>
+ </section>
   
 
 </div>
@@ -105,7 +240,7 @@
 // ====== AREA CHART ======
 const areaSpec = {
   $schema: "https://vega.github.io/schema/vega-lite/v5.json",
-  width: 875, height: 360,
+  width: 500, height: 350,
   data: { url: "monthly_public_transport_patronage_by_mode.csv" },
   transform: [
     { calculate: "toDate(datum.Year + '-' + datum.Month + '-01')", as: "Date" },
@@ -122,7 +257,7 @@ const areaSpec = {
   ],
   mark: { type: "area", interpolate: "monotone" },
   encoding: {
-    x: { field: "Date", type: "temporal", title: "Month" },
+    x: { field: "Date", type: "temporal", axis: { format: "%Y", title: "Year", tickCount: { interval: "year", step: 1 } }, },
     y: {
       aggregate: "sum", field: "PatronageNum",
       type: "quantitative", title: "Total riders"
@@ -131,11 +266,11 @@ const areaSpec = {
     opacity: { condition: { param: "hl", value: 1 }, value: 0.18 },
     strokeWidth: { condition: { param: "hl", value: 1.2 }, value: 0 },
     order: { field: "Mode" },
-    // Tooltip added here
+    // Tooltip
     tooltip: [
-      { field: "Date", type: "temporal", title: "Month" },
-      { field: "Mode", title: "Mode" },
-      { aggregate: "sum", field: "PatronageNum", title: "Riders", format: "," }
+    { field: "Date", type: "temporal", title: "Month", format: "%b %Y" },
+    { field: "Mode", title: "Mode" },
+    { aggregate: "sum", field: "PatronageNum", title: "Riders", format: "," }
     ]
   },
   config: {
@@ -149,34 +284,55 @@ vegaEmbed("#areaChart", areaSpec, { actions:false });
 
 // ====== MAP SECTION ======
 function renderMap(modeValue="ALL"){
-  // decide which points each layer should show
   let busFilterExpr, othersFilterExpr;
   if (modeValue === "ALL") {
     busFilterExpr    = "datum.mode === 'METRO BUS'";
     othersFilterExpr = "datum.mode != 'METRO BUS'";
   } else if (modeValue === "METRO BUS") {
     busFilterExpr    = "datum.mode === 'METRO BUS'";
-    othersFilterExpr = "false"; // hide others
+    othersFilterExpr = "false"; 
   } else {
-    busFilterExpr    = "false"; // hide bus layer
+    busFilterExpr    = "false"; 
     othersFilterExpr = `datum.mode === '${modeValue}'`;
   }
 
   const mapSpec = {
-    $schema: "https://vega.github.io/schema/vega-lite/v5.json",
-    width: 900, height: 600,
-    projection: { name:"vic", type:"mercator", center:[145,-37.8], scale:12000 },
-    layer: [
-      // VIC outline
-      {
-        projection:"vic",
-        data:{ url: "ne6.json", format:{ type:"topojson", feature:"ne_50m_admin_1_states_provinces" } },
-        mark:{ type:"geoshape", fill:"#eef2f7", stroke:"#9aa3b1", strokeWidth:1.2 }
-      },
+  $schema: "https://vega.github.io/schema/vega-lite/v5.json",
+  width: 900, height: 500,
 
-      // 1) METRO BUS (underlay)
+  projection: {
+    type: "mercator",
+    center: [145.15, -37.15],
+    scale: 4500,
+    translate: [450, 300]  
+  },
+
+  layer: [
+  
+
+    // Map
+    {
+      data: {
+        url: "ne_10m.json",
+        format: { type: "topojson", feature: "ne_10m_admin_1_states_provinces" }
+      },
+      mark: { type: "geoshape", fill: "#eef2f7", stroke: "#9aa3b1", strokeWidth: 1.2 }
+    },
+
+    // Graticule 
+    {
+      data: {
+        url: "ne_10m.json",
+        format: { type: "topojson", feature: "ne_10m_graticules_1" }
+      },
+      mark: { type: "geoshape", fill: null, stroke: "#101218", 
+  strokeWidth: 0.8, 
+  opacity: 0.3, clip: true }
+    },
+
+
+      // METRO BUS (underlay)
       {
-        projection:"vic",
         data:{ url:"public_transport_stops.geojson", format:{ type:"json", property:"features" } },
         transform:[
           { calculate:"datum.geometry.coordinates[0]", as:"lon" },
@@ -184,10 +340,9 @@ function renderMap(modeValue="ALL"){
           { calculate:"datum.properties.MODE", as:"mode" },
           { calculate:"datum.properties.STOP_NAME", as:"name" },
           { filter:"datum.mode != 'INTERSTATE TRAIN' && datum.mode != 'SKYBUS'" },
-          { filter:"datum.lon >= 140.7 && datum.lon <= 150.6 && datum.lat >= -39.9 && datum.lat <= -33.0" },
           { filter: busFilterExpr }
         ],
-        // --- BUS UNDERLAY (make sure legend is ON here) ---
+        // --- BUS UNDERLAY ---
 mark: { type: "circle", opacity: 0.55, zindex: 0 },
 encoding: {
   longitude: { field: "lon" },
@@ -198,7 +353,7 @@ encoding: {
     type: "nominal",
     title: "Mode",
     scale: { scheme: "tableau10" },
-    legend: { labelColor: "#e6e8eb", titleColor: "#e6e8eb" }  // <— keep legend visible
+    legend: { labelColor: "#e6e8eb", titleColor: "#e6e8eb" } 
   },
   tooltip: [
     { field: "name", title: "Stop/Station" },
@@ -208,7 +363,6 @@ encoding: {
 
       // 2) OTHER MODES (overlay)
       {
-        projection:"vic",
         data:{ url:"public_transport_stops.geojson", format:{ type:"json", property:"features" } },
         transform:[
           { calculate:"datum.geometry.coordinates[0]", as:"lon" },
@@ -222,7 +376,7 @@ encoding: {
         mark:{ type:"circle", opacity:0.9, zindex:1 },
         encoding:{
           longitude:{ field:"lon" }, latitude:{ field:"lat" },
-          size:{ value:18 },                    // slightly larger
+          size:{ value:18 },              
           color:{
             field:"mode", type:"nominal", title:"Mode",
             scale:{ scheme:"tableau10" },
@@ -238,14 +392,14 @@ encoding: {
   vegaEmbed("#mapChart", mapSpec, { actions:false });
 }
 
-// initial + dropdown
+
 renderMap();
 document.getElementById("modeFilter").addEventListener("change",
   e => renderMap(e.target.value));
 </script>
 
 <script>
-    // =============== METRO TRAIN (annual_metropolitan_train_station_entries_fy_2024_2025.csv)
+    // =============== METRO TRAIN
     vegaEmbed("#barMetro", {
       $schema: "https://vega.github.io/schema/vega-lite/v5.json",
       width: 150, height: 360,
@@ -259,21 +413,20 @@ document.getElementById("modeFilter").addEventListener("change",
       mark: "bar",
       encoding: {
         y: { field: "Stop_name", type: "nominal", sort: "-x", title: null, axis: { labelLimit: 220 } },
-        x: { field: "Entries", type: "quantitative", title: "Annual entries", axis: { format: "," } },
+        x: { field: "Entries", type: "quantitative", title: "Annual patronage", axis: { format: "~s"} },
         color: { value: "#73d2de" },
-        tooltip: [{ field: "Stop_name", title: "Station" }, { field: "Entries", title: "Entries", format: "," }]
+        tooltip: [{ field: "Stop_name", title: "Station" }, { field: "Entries", title: "Patronage", format: "," }]
       },
       config: { background:"#12141a", axis:{labelColor:"#e6e8eb",titleColor:"#e6e8eb",gridColor:"#2b2f3b"} }
     }, { actions:false });
     
-    // =============== TRAM STOPS (annual_tramstop_patronage.csv)
-    // (Using your #barRegional slot as you requested)
-    vegaEmbed("#barRegional", {
+    // =============== TRAM STOPS 
+    vegaEmbed("#barTram", {
       $schema: "https://vega.github.io/schema/vega-lite/v5.json",
       width: 150, height: 360,
       data: { url: "annual_tramstop_patronage.csv" },
       transform: [
-        { calculate: "toNumber(datum.Patronage)", as: "Pat" },   // change to your numeric field if different
+        { calculate: "toNumber(datum.Patronage)", as: "Pat" }, 
         { filter: "isValid(datum.Stop_name) && isFinite(datum.Pat)" },
         { window: [{ op: "rank", as: "rk" }], sort: [{ field: "Pat", order: "descending" }] },
         { filter: "datum.rk <= 10" }
@@ -281,21 +434,19 @@ document.getElementById("modeFilter").addEventListener("change",
       mark: "bar",
       encoding: {
         y: { field: "Stop_name", type: "nominal", sort: "-x", title: null, axis: { labelLimit: 220 } },
-        x: { field: "Pat", type: "quantitative", title: "Annual patronage", axis: { format: "," } },
+        x: { field: "Pat", type: "quantitative", title: "Annual patronage", axis: { format: "~s"} },
         color: { value: "#8bd4a1" },
         tooltip: [{ field: "Stop_name", title: "Tram stop" }, { field: "Pat", title: "Patronage", format: "," }]
       },
       config: { background:"#12141a", axis:{labelColor:"#e6e8eb",titleColor:"#e6e8eb",gridColor:"#2b2f3b"} }
     }, { actions:false });
     
-    // =============== BUS STOPS (bus_stops_patronage.csv)
-   // =============== BUS STOPS (deduplicated)
+    // =============== BUS STOPS
 vegaEmbed("#barBus", {
   $schema: "https://vega.github.io/schema/vega-lite/v5.json",
   width: 150, height: 360,
   data: { url: "bus_stops_patronage.csv" },
   transform: [
-    // clean commas if any
     { calculate: "isString(datum.AVERAGE_DAILY) ? replace(datum.AVERAGE_DAILY, ',', '') : datum.AVERAGE_DAILY", as: "cleanVal" },
     { calculate: "toNumber(datum.cleanVal)", as: "AvgDailyNum" },
 
@@ -310,11 +461,11 @@ vegaEmbed("#barBus", {
   mark: "bar",
   encoding: {
     y: { field: "STOP_NAME", type: "nominal", sort: "-x", title: null, axis: { labelLimit: 220 } },
-    x: { field: "MeanPatronage", type: "quantitative", title: "Avg daily boardings", axis: { format: "," } },
+    x: { field: "MeanPatronage", type: "quantitative", title: "Average daily boardings", axis: { format: ",.0f", tickCount: 5 } },
     color: { value: "#e6a96b" },
     tooltip: [
       { field: "STOP_NAME", title: "Stop" },
-      { field: "MeanPatronage", title: "Avg daily", format: "," }
+      { field: "MeanPatronage", title: "Average daily patronage", format: "," }
     ]
   },
   config: { background:"#12141a", axis:{ labelColor:"#e6e8eb", titleColor:"#e6e8eb", gridColor:"#2b2f3b" } }
@@ -322,6 +473,77 @@ vegaEmbed("#barBus", {
 
     </script>
     
+    <script>
+      // ====== HEATMAP ======
+      const heatmapSpec = {
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
+        title: { text: "Service intensity by mode and hour" },
+        width: 420, height: 300,
+        data: { url: "hourly_mode_weekday.csv" },
+        transform: [
+          { calculate: "toNumber(datum.Hour)", as: "HourNum" },
+          { joinaggregate: [{ op: "sum", field: "Trips", as: "ModeTotal" }], groupby: ["Mode"] },
+          { calculate: "datum.Trips / datum.ModeTotal", as: "Share" }
+        ],
+        mark: "rect",
+        encoding: {
+          x: { field: "HourNum", type: "ordinal", sort: "ascending", title: "Hour of day", axis: { labelAngle: 0 } },
+          y: { field: "Mode", type: "nominal", title: "Mode" },
+          color: {
+            field: "Share", type: "quantitative", title: "Relative frequency (%)",
+            scale: { range: ["#3cb44b", "#ffe119", "#e6194b"] },
+            legend: { format: ".0%" }
+          },
+          tooltip: [
+            { field: "Mode" },
+            { field: "HourNum", title: "Hour" },
+            { field: "Share", title: "Relative service frequency", format: ".1%" }
+          ]
+        },
+        config: {
+          background: "#12141a",
+          axis: { labelColor: "#e6e8eb", titleColor: "#e6e8eb", gridColor: "#2b2f3b" },
+          legend: { labelColor: "#e6e8eb", titleColor: "#e6e8eb" },
+          title: { color: "#e6e8eb" }
+        }
+      };
+      vegaEmbed("#heatmapChart", heatmapSpec, { actions: false });
+      
+      // ====== LINE CHART ======
+      const lineSpec = {
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
+        title: { text: "Average trips per day, weekday vs weekend" },
+        width: 420, height: 300,
+        data: { url: "hourly_weekday_vs_weekend.csv" },
+        transform: [
+          { calculate: "toNumber(datum.Hour)", as: "HourNum" },
+          { calculate: "datum.DayType == 'Weekday' ? datum.Trips / 5 : datum.Trips / 2", as: "AvgTrips" }
+        ],
+        mark: { type: "line", point: true, interpolate: "monotone" },
+        encoding: {
+          x: { field: "HourNum", type: "ordinal", sort: "ascending", title: "Hour of day", axis: { labelAngle: 0 } },
+          y: { field: "AvgTrips", type: "quantitative", title: "Average trips per day" },
+          color: {
+            field: "DayType", type: "nominal", title: "Day type",
+            scale: { range: ["#73d2de", "#ffb347"] }
+          },
+          tooltip: [
+            { field: "DayType", title: "Day type" },
+            { field: "HourNum", title: "Hour" },
+            { field: "AvgTrips", title: "Average trips", format: "," }
+          ]
+        },
+        config: {
+          background: "#12141a",
+          axis: { labelColor: "#e6e8eb", titleColor: "#e6e8eb", gridColor: "#2b2f3b" },
+          legend: { labelColor: "#e6e8eb", titleColor: "#e6e8eb" },
+          title: { color: "#e6e8eb" }
+        }
+      };
+      vegaEmbed("#lineChart", lineSpec, { actions: false });
+      </script>
+      
+      
 
 </body>
 </html>
